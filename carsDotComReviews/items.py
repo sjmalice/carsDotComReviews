@@ -11,9 +11,9 @@ from scrapy import Item, Field
 class carsDotComReviewsItem(Item):
     # define the fields for your item here like:
     # name = Field()
-    #make = Field()   #add these later after correct way to loop through urls is done
-    #model = Field()
-    #modelYear = Field()
+    make = Field()   #add these later after correct way to loop through urls is done
+    model = Field()
+    modelYear = Field()
     rating = Field()
     url = Field()
     title = Field()
