@@ -4,9 +4,15 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-
+from scrapy.exceptions import DropItem
 
 class CarsdotcomreviewsPipeline(object):
+    
+    def process_item(self, item, spider):
+        if not all(item.values()):
+            raise DropItem("Missing values!")
+        else:
+            return item
     
     def __init__(self):
         self.filename = 'carsDotComReviews.txt'
