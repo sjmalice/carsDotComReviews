@@ -4,14 +4,37 @@ from carsDotComReviews.items import carsDotComReviewsItem
 class carsDotComSpider(Spider):
     name = 'cdcspider'
     allowed_urls = ['https://www.cars.com/research/']
-    start_urls = ['https://www.cars.com/research/honda-accord-2017/consumer-reviews/?pg=1&nr=10',
-                  'https://www.cars.com/research/toyota-camry-2017/consumer-reviews/?pg=1&nr=10']
+    yearRange = range(17, 19)
+    #generate urls for honda models
+    hondas = ['accord', 'accord_hybrid', 'civic']#, 'civic_type_r', 'clarity_plug_in_hybrid', 'fit', 'insight', 'cr_v', 'hr_v', 'pilot', 'ridgeline', 'odyssey']
+    urlH = []
+    for model in hondas:
+        for year in yearRange:
+            for i in range(1, 4):
+                urlH.append('https://www.cars.com/research/honda-{}-20{}/consumer-reviews/?pg={}&nr=250'.format(model, year, i))
+    #generate urls for toyota models
+    toyotas = ['86', 'avalon', 'avalon_hybrid', 'camry', 'camry_hybrid', 'corolla']#, 'corolla_im', 'mirai', 'prius', 'prius_prime', 'prius_c', 'prius_v', 'yaris', '4runner', 'c_hr', 'highlander', 'highlander_hybrid', 'land_cruiser', 'rav4', 'rav4_hybrid', 'sequoia', 'tacoma', 'tundra', 'sienna']
+    urlT = []
+    for model in toyotas:
+        for year in yearRange:
+            for i in range(1, 4):
+                urlH.append('https://www.cars.com/research/toyota-{}-20{}/consumer-reviews/?pg={}&nr=250'.format(model, year, i))
+    
+    start_urls = urlH + urlT
+    #['https://www.cars.com/research/honda-accord-2017/consumer-reviews/?pg={}&nr=10'.format(i) for i in range(1, 4)
+                  #'https://www.cars.com/research/toyota-86-2016/consumer-reviews/',
+                  #'https://www.cars.com/research/honda-accord-2017/consumer-reviews/?pg=2&nr=250',
+                  #'https://www.cars.com/research/honda-accord-2017/consumer-reviews/?pg=3&nr=250',
+                  #'https://www.cars.com/research/toyota-camry-2017/consumer-reviews/?pg=1&nr=10',
+                  #'https://www.cars.com/research/toyota-camry-2017/consumer-reviews/?pg=2&nr=100']
     
     def parse(self, response):
         reviews = response.xpath('//article') #tag for the user reviews
-        modelYear, make, model = response.xpath('//span[@class="cui-heading-3"]/text()').extract_first().split()
-        print(len(reviews))
-        print("="*40)
+        ymm = response.xpath('//span[@class="cui-heading-3"]/text()').extract_first().split()
+        modelYear, make = ymm[:2]
+        model = ' '.join(ymm[2:])
+        #print(len(reviews))
+        #print("="*40)
         i = 1
         for review in reviews:
             print(i)
@@ -30,7 +53,7 @@ class carsDotComSpider(Spider):
             value = review.xpath('./div/div[5]/cars-star-rating/@rating').extract_first()
             reliability = review.xpath('./div/div[6]/cars-star-rating/@rating').extract_first()
             extras = review.xpath('./p[@class="review-card-extra"]')
-            new = ''
+            new = '' #should these 3 be set to None?
             use = ''
             recommend = ''
             for extra in extras:
