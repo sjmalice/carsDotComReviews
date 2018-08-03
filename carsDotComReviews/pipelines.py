@@ -5,6 +5,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from scrapy.exceptions import DropItem
+from scrapy.exporters import CsvItemExporter
 
 class CarsdotcomreviewsPipeline(object):
     
@@ -14,16 +15,20 @@ class CarsdotcomreviewsPipeline(object):
         else:
             return item
     
+class WriteItemPipeline(object):
+
     def __init__(self):
-        self.filename = 'carsDotComReviews.txt'
+        self.filename = 'carsDotComReviews.csv'
         
     def open_spider(self, spider):
-        self.file = open(self.filename, 'w')
+        self.csvfile = open(self.filename, 'wb')
+        self.exporter = CsvItemExporter(self.csvfile)
+        self.exporter.start_exporting()
         
     def close_spider(self, spider):
-        self.file.close()
+        self.exporter.finish_exporting()
+        self.csvfile.close()
         
     def process_item(self, item, spider):
-        line = '\t'.join(item.values()) + '\n'
-        self.file.write(line)
+        self.exporter.export_item(item)
         return item
