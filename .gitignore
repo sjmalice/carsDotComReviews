@@ -2,3 +2,6 @@ carsDotComReviews.csv
 carsDotComReviews/__pycache__/
 carsDotComReviews/spiders/__pycache__/
 log.txt
+.RData
+.Rhistory
+rProjectDoodling.R

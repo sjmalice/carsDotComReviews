@@ -1,0 +1,102 @@
+---
+title: "Comparison of Honda and Toyota Brand Pereption based on User Reviews from cars.com"
+author: "Simon Joyce"
+date: "August 4, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+### Overall rating
+
+
+```{r, echo=FALSE}
+t.test(carsDotComReviews$rating[carsDotComReviews$make == "Honda"],
+         carsDotComReviews$rating[carsDotComReviews$make == "Toyota"],
+         alternative = "two.sided")
+```
+
+Since p-value is greater than 0.05, we have no reason to suspect there is any difference in perception between the overall ratings of both brands.
+
+### Comfort
+
+```{r, echo=FALSE}
+t.test(carsDotComReviews$comfort[carsDotComReviews$make == "Honda"],
+         carsDotComReviews$comfort[carsDotComReviews$make == "Toyota"],
+         alternative = "two.sided")
+```
+
+Since the p-value is greater than 0.05, we suspect no difference in user perception of comfort.
+
+### Exterior Styling
+
+```{r, echo=FALSE}
+t.test(carsDotComReviews$exteriorStyling[carsDotComReviews$make == "Honda"],
+         carsDotComReviews$exteriorStyling[carsDotComReviews$make == "Toyota"],
+         alternative = "two.sided")
+```
+
+Since the p-value is greater than 0.05, we suspect no difference in user perception of exterior styling
+
+### Interior
+
+```{r, echo=FALSE}
+t.test(carsDotComReviews$interior[carsDotComReviews$make == "Honda"],
+         carsDotComReviews$interior[carsDotComReviews$make == "Toyota"],
+         alternative = "two.sided")
+```
+
+Since the p-value is less than 0.05, there is strong evidence to suspect that Hondas are perceived to have superior interior styling.
+
+### Performance
+
+```{r, echo=FALSE}
+t.test(carsDotComReviews$performance[carsDotComReviews$make == "Honda"],
+         carsDotComReviews$performance[carsDotComReviews$make == "Toyota"],
+         alternative = "two.sided")
+```
+
+Since p-value is greater than 0.05, we have no reason to suspect there is any difference in perceived performance of both brands.
+
+### Reliability
+
+```{r, echo=FALSE}
+t.test(carsDotComReviews$reliability[carsDotComReviews$make == "Honda"],
+         carsDotComReviews$reliability[carsDotComReviews$make == "Toyota"],
+         alternative = "two.sided")
+```
+
+Since the p-value is greater than 0.05, we have no reason to suspect there is any difference in perceived reliability of both brands.
+
+### Value
+
+```{r, echo=FALSE}
+t.test(carsDotComReviews$value[carsDotComReviews$make == "Honda"],
+         carsDotComReviews$value[carsDotComReviews$make == "Toyota"],
+         alternative = "two.sided")
+```
+
+Since the p-value is less than 0.05, there is strong evidence to suspect that Hondas are perceived to offer better value for money.
+
