@@ -15,11 +15,14 @@ carsDotComReviews <- read_csv("carsDotComReviews.csv")
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
+  sidebarFiltered = reactive({
+    carsDotComReviews %>% 
+      filter(new %in% input$newUsed)
+  })
   output$categories = renderPlotly({
     #generate table for plot
-    catPlot = carsDotComReviews %>% 
+    catPlot = sidebarFiltered() %>% 
       filter(
-        new %in% input$newUsed,
         between(modelYear, input$modelYears[1] + 2000, input$modelYears[2] + 2000)
         ) %>% 
       group_by(make) %>% 
@@ -39,6 +42,22 @@ shinyServer(function(input, output) {
     #render plot
     ggplot(catPlot, aes(x = category)) +
       geom_col(aes(y = avgScore, fill = make), position = 'dodge') +
+      coord_cartesian(ylim = c(yMin, yMax))
+  })
+  output$years = renderPlotly({
+    #generate table for plot
+    yearPlot = sidebarFiltered() %>%
+      select(make, modelYear, score = input$category) %>% 
+      group_by(make, modelYear) %>% 
+      summarise(score = mean(score, na.rm = T))
+    
+    #find bounds for plot
+    yMin = floor(min(yearPlot$score)*10)/10
+    yMax = ceiling(max(yearPlot$score)*10)/10
+    
+    #render plot
+    ggplot(yearPlot, aes(x = modelYear)) +
+      geom_col(aes(y = score, fill = make), position = 'dodge') +
       coord_cartesian(ylim = c(yMin, yMax))
   })
 })

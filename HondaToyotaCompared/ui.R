@@ -22,8 +22,13 @@ shinyUI(
         ),
       sidebarMenu(
         menuItem("Intro", tabName = "intro", icon = icon("file")),
-        menuItem("Categories", tabName = "categories")
-      )
+        menuItem("Score Categories", tabName = "categories"),
+        menuItem("Model Years", tabName = "years")
+      ),
+      checkboxGroupInput("newUsed",
+                         label = h3("New or Used"),
+                         choices = list("New" = "New", "Used" = "Used"),
+                         selected = c("New", "Used"))
     ),
     dashboardBody(
       tabItems(
@@ -49,19 +54,38 @@ shinyUI(
           tabName = "categories",
           fluidRow(
             box(
-              checkboxGroupInput("newUsed",
-                                 label = h3("New or Used"),
-                                 choices = list("New" = "New", "Used" = "Used"),
-                                 selected = c("New", "Used"))
-            ),
-            box(
-              sliderInput("modelYears", label = h3("Model Years"), min = 13, 
-                          max = 18, value = c(13, 18))
+              sliderInput("modelYears",
+                          label = h3("Model Years"),
+                          min = 13, 
+                          max = 18,
+                          value = c(13, 18))
             )
           ),
           fluidRow(
             box(
               plotlyOutput("categories"),
+              width = 12
+            )
+          )
+        ),
+        tabItem(
+          tabName = "years",
+          fluidRow(
+            box(
+              selectizeInput("category",
+                             label = h3("Score Category"),
+                             choices = list("Overall" = "rating",
+                                            "Comfort" = "comfort",
+                                            "Exterior Styling" = "exteriorStyling",
+                                            "Interior Styling" = "interior",
+                                            "Performance" = "performance",
+                                            "Reliability" = "reliability",
+                                            "Value for Money" = "value"))
+            )
+          ),
+          fluidRow(
+            box(
+              plotlyOutput("years"),
               width = 12
             )
           )
