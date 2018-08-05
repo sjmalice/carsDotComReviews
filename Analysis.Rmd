@@ -100,3 +100,18 @@ t.test(carsDotComReviews$value[carsDotComReviews$make == "Honda"],
 
 Since the p-value is less than 0.05, there is strong evidence to suspect that Hondas are perceived to offer better value for money.
 
+The scores in all categories seem to increase with model year. Checking the correlation between model year and each of the score categories, we get positive correlations, but the number seem low?
+
+```{r, echo=FALSE}
+scoreCats = carsDotComReviews %>% 
+  select(rating, 
+         comfort, 
+         exteriorStyling, 
+         interior, 
+         performance, 
+         reliability, 
+         value)
+
+cor(carsDotComReviews$modelYear, scoreCats, use = "pairwise.complete.obs")
+```
+

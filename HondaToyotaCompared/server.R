@@ -13,36 +13,54 @@ library(plotly)
 
 carsDotComReviews <- read_csv("carsDotComReviews.csv")
 
-# Define server logic required to draw a histogram
+#function to calculate p-values
+pValue = function(df){
+  function(s){
+    t.test(df[[s]][df$make == "Honda"],
+           df[[s]][df$make == "Toyota"],
+           alternative = "two.sided")$p.value 
+  }
+}
+
 shinyServer(function(input, output) {
+  #filter table by sidebar selections
   sidebarFiltered = reactive({
-    carsDotComReviews %>% 
-      filter(new %in% input$newUsed)
+    if (length(input$newUsed) == 2){
+      return(carsDotComReviews)
+    } else {
+      return(carsDotComReviews %>% 
+               filter(new == input$newUsed))
+    }
   })
   output$categories = renderPlotly({
-    #generate table for plot
-    catPlot = sidebarFiltered() %>% 
+    
+    pageFiltered = sidebarFiltered() %>% 
       filter(
         between(modelYear, input$modelYears[1] + 2000, input$modelYears[2] + 2000)
-        ) %>% 
+        )
+    #generate table for plot
+    catPlot = pageFiltered %>% 
       group_by(make) %>% 
-      summarise(overall = mean(rating, na.rm = T),
+      summarise(rating = mean(rating, na.rm = T),
                 comfort = mean(comfort, na.rm = T),
                 exteriorStyling = mean(exteriorStyling, na.rm = T),
                 interior = mean(interior, na.rm = T),
                 performance = mean(performance, na.rm = T),
                 reliability = mean(reliability, na.rm = T),
                 value = mean(value, na.rm = T)) %>%
-      gather(key = "category", value = "avgScore", overall:value)
+      gather(key = "category", value = "avgScore", rating:value) %>% 
+    #calculate p-values between brands
+      mutate(pValue = signif(sapply(category, pValue(pageFiltered)), digits = 3))
     
     #find bounds for plot
     yMin = floor(min(catPlot$avgScore)*10)/10
     yMax = ceiling(max(catPlot$avgScore)*10)/10
     
     #render plot
-    ggplot(catPlot, aes(x = category)) +
-      geom_col(aes(y = avgScore, fill = make), position = 'dodge') +
-      coord_cartesian(ylim = c(yMin, yMax))
+    (ggplot(catPlot, aes(x = category)) +
+      geom_col(aes(y = avgScore, fill = make, color = pValue), position = 'dodge') +
+      coord_cartesian(ylim = c(yMin, yMax))) %>% 
+      ggplotly(tooltip = c("y", "pValue"))
   })
   output$years = renderPlotly({
     #generate table for plot
@@ -56,8 +74,9 @@ shinyServer(function(input, output) {
     yMax = ceiling(max(yearPlot$score)*10)/10
     
     #render plot
-    ggplot(yearPlot, aes(x = modelYear)) +
+    (ggplot(yearPlot, aes(x = modelYear)) +
       geom_col(aes(y = score, fill = make), position = 'dodge') +
-      coord_cartesian(ylim = c(yMin, yMax))
+      coord_cartesian(ylim = c(yMin, yMax))) %>% 
+      ggplotly(tooltip = c("y", "pValue"))
   })
 })
