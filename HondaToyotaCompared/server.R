@@ -18,7 +18,8 @@ pValue = function(df){
   function(s){
     t.test(df[[s]][df$make == "Honda"],
            df[[s]][df$make == "Toyota"],
-           alternative = "two.sided")$p.value 
+           alternative = "two.sided")$p.value %>% 
+      signif(digits = 3)
   }
 }
 
@@ -50,7 +51,7 @@ shinyServer(function(input, output) {
                 value = mean(value, na.rm = T)) %>%
       gather(key = "category", value = "avgScore", rating:value) %>% 
     #calculate p-values between brands
-      mutate(pValue = signif(sapply(category, pValue(pageFiltered)), digits = 3))
+      mutate(pValue = sapply(category, pValue(pageFiltered)))
     
     #find bounds for plot
     yMin = floor(min(catPlot$avgScore)*10)/10
@@ -63,11 +64,18 @@ shinyServer(function(input, output) {
       ggplotly(tooltip = c("y", "pValue"))
   })
   output$years = renderPlotly({
+    #function to generate p-values
+    pValue0 = function(y){
+      t.test(sidebarFiltered()[["rating"]][(sidebarFiltered()$modelYear == y) & sidebarFiltered()$make == "Honda"],
+             sidebarFiltered()[["rating"]][(sidebarFiltered()$modelYear == y) & sidebarFiltered()$make == "Toyota"],
+             alternative = "two.sided")$p.value %>% 
+        signif(digits = 3)
+    }
     #generate table for plot
     yearPlot = sidebarFiltered() %>%
       select(make, modelYear, score = input$category) %>% 
       group_by(make, modelYear) %>% 
-      summarise(score = mean(score, na.rm = T))
+      summarise(score = mean(score, na.rm = T), pValue = pValue0(modelYear))
     
     #find bounds for plot
     yMin = floor(min(yearPlot$score)*10)/10
@@ -75,7 +83,7 @@ shinyServer(function(input, output) {
     
     #render plot
     (ggplot(yearPlot, aes(x = modelYear)) +
-      geom_col(aes(y = score, fill = make), position = 'dodge') +
+      geom_col(aes(y = score, fill = make, color = pValue), position = 'dodge') +
       coord_cartesian(ylim = c(yMin, yMax))) %>% 
       ggplotly(tooltip = c("y", "pValue"))
   })
