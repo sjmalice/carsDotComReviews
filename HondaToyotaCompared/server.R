@@ -18,7 +18,7 @@ pValue = function(df){
   function(s){
     t.test(df[[s]][df$make == "Honda"],
            df[[s]][df$make == "Toyota"],
-           alternative = "two.sided")$p.value %>% 
+           alternative = "two.sided")$p.value %>%
       signif(digits = 3)
   }
 }
@@ -48,7 +48,8 @@ shinyServer(function(input, output) {
                 interior = mean(interior, na.rm = T),
                 performance = mean(performance, na.rm = T),
                 reliability = mean(reliability, na.rm = T),
-                value = mean(value, na.rm = T)) %>%
+                value = mean(value, na.rm = T),
+                count = n()) %>%
       gather(key = "category", value = "avgScore", rating:value) %>% 
     #calculate p-values between brands
       mutate(pValue = sapply(category, pValue(pageFiltered)))
@@ -59,15 +60,16 @@ shinyServer(function(input, output) {
     
     #render plot
     (ggplot(catPlot, aes(x = category)) +
-      geom_col(aes(y = avgScore, fill = make, color = pValue), position = 'dodge') +
-      coord_cartesian(ylim = c(yMin, yMax))) %>% 
-      ggplotly(tooltip = c("y", "pValue"))
+      geom_col(aes(y = avgScore, fill = make, color = pValue, group = count), position = 'dodge') +
+      coord_cartesian(ylim = c(yMin, yMax)) +
+      guides(colour = 'none')) %>% 
+      ggplotly(tooltip = c("y", "pValue", "count"))
   })
   output$years = renderPlotly({
     #function to generate p-values
     pValue0 = function(y){
-      t.test(sidebarFiltered()[["rating"]][(sidebarFiltered()$modelYear == y) & sidebarFiltered()$make == "Honda"],
-             sidebarFiltered()[["rating"]][(sidebarFiltered()$modelYear == y) & sidebarFiltered()$make == "Toyota"],
+      t.test(sidebarFiltered()[[input$category]][(sidebarFiltered()$modelYear == y) & sidebarFiltered()$make == "Honda"],
+             sidebarFiltered()[[input$category]][(sidebarFiltered()$modelYear == y) & sidebarFiltered()$make == "Toyota"],
              alternative = "two.sided")$p.value %>% 
         signif(digits = 3)
     }
@@ -75,7 +77,9 @@ shinyServer(function(input, output) {
     yearPlot = sidebarFiltered() %>%
       select(make, modelYear, score = input$category) %>% 
       group_by(make, modelYear) %>% 
-      summarise(score = mean(score, na.rm = T), pValue = pValue0(modelYear))
+      summarise(score = mean(score, na.rm = T),
+                pValue = pValue0(modelYear),
+                count = n())
     
     #find bounds for plot
     yMin = floor(min(yearPlot$score)*10)/10
@@ -83,8 +87,9 @@ shinyServer(function(input, output) {
     
     #render plot
     (ggplot(yearPlot, aes(x = modelYear)) +
-      geom_col(aes(y = score, fill = make, color = pValue), position = 'dodge') +
-      coord_cartesian(ylim = c(yMin, yMax))) %>% 
-      ggplotly(tooltip = c("y", "pValue"))
+      geom_col(aes(y = score, fill = make, color = pValue, group = count), position = 'dodge') +
+      coord_cartesian(ylim = c(yMin, yMax)) +
+      guides(colour = 'none')) %>% 
+      ggplotly(tooltip = c("y", "pValue", "count"))
   })
 })
