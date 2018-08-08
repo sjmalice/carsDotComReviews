@@ -12,6 +12,7 @@ library(tidyverse)
 library(plotly)
 
 carsDotComReviews <- read_csv("carsDotComReviews.csv")
+carsDotComReviews$recommend = as.factor(carsDotComReviews$recommend)
 
 #function to calculate p-values
 pValue = function(df){
@@ -26,13 +27,15 @@ pValue = function(df){
 shinyServer(function(input, output) {
   #filter table by sidebar selections
   sidebarFiltered = reactive({
-    if (length(input$newUsed) == 2){
+    (if (length(input$newUsed) == 2){
       return(carsDotComReviews)
     } else {
       return(carsDotComReviews %>% 
                filter(new == input$newUsed))
-    }
+    }) %>% 
+      filter(recommend %in% input$recommend)
   })
+  
   output$categories = renderPlotly({
     
     pageFiltered = sidebarFiltered() %>% 
@@ -90,6 +93,6 @@ shinyServer(function(input, output) {
       geom_col(aes(y = score, fill = make, color = pValue, group = count), position = 'dodge') +
       coord_cartesian(ylim = c(yMin, yMax)) +
       guides(colour = 'none')) %>% 
-      ggplotly(tooltip = c("y", "pValue", "count"))
+      ggplotly(tooltip = c("y", "pValue", "count", "make"))
   })
 })
