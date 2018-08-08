@@ -115,3 +115,12 @@ scoreCats = carsDotComReviews %>%
 cor(carsDotComReviews$modelYear, scoreCats, use = "pairwise.complete.obs")
 ```
 
+### Comparing Model Years
+
+Looking at score categories over all reviews, Honda is ahead in every category but reliability. The difference is only significant the style categories and value for money. The pattern is similar for model years 13-14, but difference in value for money is no longer significant. For model years 17-18, Honda is ahead significantly in all categories except for reliability.
+
+For model years 13-16, Toyota is rated significantly higher in reliability and performance, with other categores being fairly even. For model years 15-16, Toyota is also ahead significantly in the overall and comfort categories.
+
+So Honda has been doing an excellent job marketing their cars in the last two years, however Toyota is consistently rated higher in the reliability category. Toyota should consider why Hondas are generally perceived more favourably the last two years, and continue to push their brand as the most reliable.
+
+### Comparing Categories Across Model Years

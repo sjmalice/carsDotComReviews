@@ -10,6 +10,9 @@
 library(shiny)
 library(tidyverse)
 library(plotly)
+library(tm)
+library(wordcloud)
+library(slam)
 
 carsDotComReviews <- read_csv("carsDotComReviews.csv")
 carsDotComReviews$recommend = as.factor(carsDotComReviews$recommend)
@@ -34,6 +37,10 @@ shinyServer(function(input, output) {
                filter(new == input$newUsed))
     }) %>% 
       filter(recommend %in% input$recommend)
+  })
+  
+  sWords = reactive({
+    strsplit(input$stopWords, split = " ")
   })
   
   output$categories = renderPlotly({
@@ -93,6 +100,40 @@ shinyServer(function(input, output) {
       geom_col(aes(y = score, fill = make, color = pValue, group = count), position = 'dodge') +
       coord_cartesian(ylim = c(yMin, yMax)) +
       guides(colour = 'none')) %>% 
-      ggplotly(tooltip = c("y", "pValue", "count", "make"))
+      ggplotly(tooltip = c("y", "pValue", "count"))
+  })
+  output$wordCloudH = renderPlot({
+    plotWords = sidebarFiltered() %>% 
+      filter((make == "Honda") &
+               between(modelYear,
+                       input$modelYears1[1] + 2000,
+                       input$modelYears1[2] + 2000)
+             ) %>% 
+      cloud(sWords()[[1]])
+    
+    wordcloud_rep(words = plotWords$word,
+              freq = plotWords$freq,
+              max.words=100,
+              random.order=FALSE,
+              rot.per=0.35,
+              colors=brewer.pal(8, "Dark2"))
+    
+  })
+  output$wordCloudT = renderPlot({
+    plotWords = sidebarFiltered() %>% 
+      filter((make == "Toyota") &
+               between(modelYear,
+                       input$modelYears1[1] + 2000,
+                       input$modelYears1[2] + 2000)
+      ) %>%  
+      cloud(sWords()[[1]])
+    
+    wordcloud_rep(words = plotWords$word,
+              freq = plotWords$freq,
+              max.words=100,
+              random.order=FALSE,
+              rot.per=0.35,
+              colors=brewer.pal(8, "Dark2"))
+    
   })
 })

@@ -25,7 +25,8 @@ shinyUI(
       sidebarMenu(
         menuItem("Intro", tabName = "intro", icon = icon("file")),
         menuItem("Score Categories", tabName = "categories", icon = icon("car")),
-        menuItem("Model Years", tabName = "years", icon = icon("calendar"))
+        menuItem("Model Years", tabName = "years", icon = icon("calendar")),
+        menuItem("Word Clouds", tabName = "words", icon = icon("book"))
       ),
       hr(),
       checkboxGroupInput("newUsed",
@@ -55,6 +56,8 @@ shinyUI(
             #        companies would be wise to pay close attention to what is being said about them within the reviews."),
             tags$p("In the sidebar, you can select reviews based on whether the car was bought new or used, 
                    or if the reviewer recommends the car or not. "),
+            tags$p("For the wordcloud, you can remove any words that you like by adding a lower-case, space separated list into the text box"),
+            tags$a(href = "https://github.com/sjmalice/carsDotComReviews", "Github link for this project"),
             width = 6
             ),
             box(tags$img(src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Honda_CR-V_2.2_i-DTEC_Lifestyle_(IV)_%E2%80%93_Frontansicht,_25._Januar_2014,_D%C3%BCsseldorf.jpg/1200px-Honda_CR-V_2.2_i-DTEC_Lifestyle_(IV)_%E2%80%93_Frontansicht,_25._Januar_2014,_D%C3%BCsseldorf.jpg",
@@ -115,6 +118,38 @@ shinyUI(
               plotlyOutput("years"),
               width = 12
             )
+          )
+        ),
+        tabItem(
+          tabName = "words",
+          fluidRow(
+            box(
+              sliderInput("modelYears1",
+                          label = h3("Model Year Range"),
+                          min = 13, 
+                          max = 18,
+                          value = c(13, 18)),
+              # height = "auto",
+              width = 6
+            ),
+            box(
+              textInput("stopWords", label = h3("Remove Words"), value = "")
+            )
+          ),
+          fluidRow(
+            box(
+              plotOutput("wordCloudH"),
+              title = "Honda",
+              width = 6
+            ),
+            box(
+              plotOutput("wordCloudT"),
+              title = "Toyota",
+              width = 6
+            )
+          ),
+          fluidRow(
+            
           )
         )
       )
