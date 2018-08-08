@@ -5,9 +5,9 @@ account: simonjoyce
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 396925
-bundleId: 1524068
+bundleId: 1524092
 url: https://simonjoyce.shinyapps.io/HondaToyotaCompared/
-when: 1533699138.85867
+when: 1533700534.70153
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: .RData

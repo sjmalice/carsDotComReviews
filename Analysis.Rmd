@@ -124,3 +124,13 @@ For model years 13-16, Toyota is rated significantly higher in reliability and p
 So Honda has been doing an excellent job marketing their cars in the last two years, however Toyota is consistently rated higher in the reliability category. Toyota should consider why Hondas are generally perceived more favourably the last two years, and continue to push their brand as the most reliable.
 
 ### Comparing Categories Across Model Years
+There seems to be an upward trend in positive reviews. Some possible explainations would be that negative reviews become more likely over time. Perhaps reviewers write negative reviews when problems that take time to appear arrise, or having problems with the dealership. Perhaps buyers attitude towards their purchase is most positive just after buying, then decreases over time. Another explaination might be a greater proportion of fake positive reviews for more recent model years. If potential buyers are persuaded by user reviews, then it makes sense that the companies would have an incentive to flood the site with glowing reviews. This incentive would be strongest for the most recent model year. These relationships require further investigation.
+
+The only exception to the upward trend is the reliability category.
+
+### What Reviewers are Saying
+The most common words used are "great" and "love". This is not surprising since the majority of reviews are positive
+
+Restricting to when the reviewer does not recommend the car, we see the words "engine" and "noise" more commonly among Honda reviews. A potential problem with their cars? Restricting additionally to used cards, the word "vibration" now appears prominantly on the Honda side
+
+Looking at recommended reviews for model year 2018, after removing the words "love", "great", "good", features", and "comfortable", the words "safety" and "reliable" becomes noticeably more prominant among Toyota reviews. If Toyota is marketing their cars as safe and reliable, then it looks like they are succeeding.
